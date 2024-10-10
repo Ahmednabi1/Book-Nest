@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Books</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/availableBooksStyles.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo"><a href="/dashboard"><i class="fa-solid fa-house-chimney"></i> Home</a></div>
+            <ul class="nav-items">
+                <li><a href="/books/addBooks"><i class="fa-solid fa-plus"></i> Add Book</a></li>
+                <li><a href="/myBooks"><i class="fas fa-book"></i> My Books</a></li>
+                <li><a href="/my-rentals"><i class="fa-solid fa-rectangle-list"></i> My Rentals</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title text-center"><i class="fas fa-book-open"></i> Available Books</h1>
+        <div class="row books-list">
+            <% if (books.length> 0) { %>
+                <% books.forEach(book=> { %>
+                    <div class="col-lg-3 col-md-4 col-sm-6">
+                        <div class="book-card">
+                            <% if (book.thumbnail_path) { %>
+                                <img src="/<%= book.thumbnail_path %>" class="book-thumbnail"
+                                    alt="<%= book.title %> Thumbnail">
+                                <% } else { %>
+                                    <img src="https://via.placeholder.com/150" class="book-thumbnail"
+                                        alt="Default Thumbnail">
+                                    <% } %>
+                                        <div class="book-info">
+                                            <h2 class="book-title"><i class="fas fa-book"></i>
+                                                <%= book.title %>
+                                            </h2>
+                                            <p class="book-author"><i class="fas fa-user"></i> <strong>Author:</strong>
+                                                <%= book.author %>
+                                            </p>
+                                            <p class="book-description"><strong><i class="fas fa-align-left"></i>
+                                                    Description:</strong>
+                                                <%= book.description %>
+                                            </p>
+                                            <p class="book-added-by"><i class="fas fa-user-plus"></i> <strong>Added
+                                                    by:</strong>
+                                                <%= book.User.name %>
+                                            </p>
+
+                                            <p class="book-rating"><i class="fas fa-star"></i> <strong>Average
+                                                    Rating:</strong>
+                                                <%= book.averageRating %>
+                                            </p>
+
+                                            <div class="book-reviews">
+                                                <% if (book.RatingAndReviews.length> 0) { %>
+                                                    <% book.RatingAndReviews.forEach(review=> { %>
+                                                        <div class="review">
+                                                            <p><i class="fas fa-user"></i> <strong>
+                                                                    <%= review.User.name %>:
+                                                                </strong>
+                                                                <%= review.rating %> stars
+                                                            </p>
+                                                            <p><i class="fas fa-comment"></i>
+                                                                <%= review.review %>
+                                                            </p>
+                                                        </div>
+                                                        <% }) %>
+                                                            <% } else { %>
+                                                                <p>No reviews yet.</p>
+                                                                <% } %>
+                                            </div>
+
+                                            <div class="book-gallery">
+                                                <% if (book.BookImages && book.BookImages.length> 0) { %>
+                                                    <div class="gallery-slider">
+                                                        <% book.BookImages.forEach(image=> { %>
+                                                            <div><img src="/<%= image.image_path %>"
+                                                                    class="gallery-image" alt="Book Image"></div>
+                                                            <% }) %>
+                                                    </div>
+                                                    <% } else { %>
+                                                        <p>No images available for this book.</p>
+                                                        <% } %>
+                                            </div>
+
+                                            <form action="/books/rent/<%= book.id %>" method="POST">
+                                                <div class="rentDates">
+                                                    <div class="rent">
+                                                        <div class="form-group date">
+                                                            <label for="startDate"><i class="fas fa-calendar-alt"></i>
+                                                                Start Date:</label>
+                                                            <input type="date" id="startDate" name="startDate"
+                                                                class="form-control" required>
+                                                        </div>
+                                                        <div class="form-group date">
+                                                            <label for="endDate"><i class="fas fa-calendar-alt"></i> End
+                                                                Date:</label>
+                                                            <input type="date" id="endDate" name="endDate"
+                                                                class="form-control" required>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <button type="submit" class="rent-btn"> <span class="button_top"><i
+                                                            class="fas fa-shopping-cart"></i> RENT </span></button>
+                                            </form>
+
+                                        </div>
+                        </div>
+
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+                            <p class="text-center">No books available at the moment.</p>
+                            <% } %>
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('.gallery-slider').slick({
+                centerMode: true,
+                centerPadding: '40px',
+                slidesToShow: 3,
+                autoplay: true,
+                autoplaySpeed: 2000,
+                responsive: [
+                    {
+                        breakpoint: 768,
+                        settings: {
+                            arrows: false,
+                            centerMode: true,
+                            centerPadding: '40px',
+                            slidesToShow: 1
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+</body>
+
+</html>

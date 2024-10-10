@@ -1,0 +1,166 @@
+body {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.6)), url('/img/backg5.jpg');
+  background-size: cover;
+  background-position: center;
+  color: #f5f5f5;
+  font-family: 'Arial', sans-serif;
+}
+
+.return-button {
+    display: inline-block;
+    border-radius: 4px;
+    background-color: #6a3410;
+    border: none;
+    color: #FFFFFF;
+    text-align: center;
+    font-size: 16px;
+    padding: 8px;
+    width: 130px;
+    transition: all 0.5s;
+    cursor: pointer;
+    margin: 5px;
+   }
+   
+   .return-button span {
+    cursor: pointer;
+    display: inline-block;
+    position: relative;
+    transition: 0.5s;
+   }
+   
+   .return-button span:after {
+    content: '»';
+    position: absolute;
+    opacity: 0;
+    top: 0;
+    right: -15px;
+    transition: 0.5s;
+   }
+   
+   .return-button:hover span {
+    padding-right: 15px;
+   }
+   
+   .return-button:hover span:after {
+    opacity: 1;
+    right: 0;
+   }
+
+   .frm-btn{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+    align-items: center;
+   }
+
+
+.rate {
+    position: relative;
+    padding: 0px 22px;
+    border-radius: 6px;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    background-color: #6a3410;
+    transition: all 0.2s ease;
+    height: 55px;
+  }
+  
+  .rate:active {
+    transform: scale(0.96);
+  }
+  
+  .rate:before,
+  .rate:after {
+    position: absolute;
+    content: "";
+    width: 150%;
+    left: 50%;
+    height: 100%;
+    transform: translateX(-50%);
+    z-index: -1000;
+    background-repeat: no-repeat;
+  }
+  
+  .rate:hover:before {
+    top: -70%;
+    background-image: radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, transparent 20%, #a14424 20%, transparent 30%),
+      radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, transparent 10%, #a14424 15%, transparent 20%),
+      radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, #a14424 20%, transparent 20%);
+    background-size: 10% 10%, 20% 20%, 15% 15%, 20% 20%, 18% 18%, 10% 10%, 15% 15%,
+      10% 10%, 18% 18%;
+    background-position: 50% 120%;
+    animation: greentopBubbles 0.6s ease;
+  }
+  
+  @keyframes greentopBubbles {
+    0% {
+      background-position: 5% 90%, 10% 90%, 10% 90%, 15% 90%, 25% 90%, 25% 90%,
+        40% 90%, 55% 90%, 70% 90%;
+    }
+  
+    50% {
+      background-position: 0% 80%, 0% 20%, 10% 40%, 20% 0%, 30% 30%, 22% 50%,
+        50% 50%, 65% 20%, 90% 30%;
+    }
+  
+    100% {
+      background-position: 0% 70%, 0% 10%, 10% 30%, 20% -10%, 30% 20%, 22% 40%,
+        50% 40%, 65% 10%, 90% 20%;
+      background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+  }
+  
+  .rate:hover::after {
+    bottom: -70%;
+    background-image: radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, transparent 10%, #a14424 15%, transparent 20%),
+      radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, #a14424 20%, transparent 20%),
+      radial-gradient(circle, #a14424 20%, transparent 20%);
+    background-size: 15% 15%, 20% 20%, 18% 18%, 20% 20%, 15% 15%, 20% 20%, 18% 18%;
+    background-position: 50% 0%;
+    animation: greenbottomBubbles 0.6s ease;
+  }
+  
+  
+  @keyframes greenbottomBubbles {
+    0% {
+      background-position: 10% -10%, 30% 10%, 55% -10%, 70% -10%, 85% -10%,
+        70% -10%, 70% 0%;
+    }
+  
+    50% {
+      background-position: 0% 80%, 20% 80%, 45% 60%, 60% 100%, 75% 70%, 95% 60%,
+        105% 0%;
+    }
+  
+    100% {
+      background-position: 0% 90%, 20% 90%, 45% 70%, 60% 110%, 75% 80%, 95% 70%,
+        110% 10%;
+      background-size: 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%, 0% 0%;
+    }
+  }
+
+
+  
+  .rate-link{
+        text-decoration: none;
+        color: white;
+        font-size: 0.9rem;
+        padding: 0px 1px;
+  }
+
+.container{
+  max-width: 1460px;
+  margin-bottom: 155px;
+}

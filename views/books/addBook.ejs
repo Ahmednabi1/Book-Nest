@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Book</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="/css/nav.css">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="/css/addBookStyles.css">
+</head>
+
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <div class="logo"><a href="/dashboard"><i class="fa-solid fa-house-chimney"></i> Home</a></div>
+            <ul class="nav-items">
+                <li><a href="/myBooks"><i class="fas fa-book"></i> My Books</a></li>
+                <li><a href="/my-rentals"><i class="fa-solid fa-rectangle-list"></i> My Rentals</a></li>
+                <li><a href="/books/allBooks"><i class="fas fa-book-open"></i> Browse Books</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-image"></div>
+        <div class="form-container">
+            <h1 class="bookhd">Add a New Book</h1>
+            <form action="/books/addBooks" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="title"><i class="fas fa-book"></i> Book Title:</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="author"><i class="fas fa-user"></i> Author:</label>
+                    <input type="text" id="author" name="author" required>
+                </div>
+                <div class="form-group">
+                    <label for="description"><i class="fas fa-info-circle"></i> Description:</label>
+                    <textarea id="description" name="description"></textarea>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="thumbnail" class="form-label"><i class="fas fa-image"></i> Thumbnail Image</label>
+                    <div class="file-input">
+                        <input type="file" id="thumbnail" name="thumbnail" class="form-control" accept="image/*"
+                            required>
+                        <label for="thumbnail" class="file-label">Choose File</label>
+                        <span class="file-name" id="thumbnail-file-name">No file chosen</span>
+                    </div>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="gallery" class="form-label"><i class="fas fa-images"></i> Gallery Images</label>
+                    <div class="file-input">
+                        <input type="file" id="gallery" name="gallery" class="form-control" accept="image/*" multiple>
+                        <label for="gallery" class="file-label">Choose Files</label>
+                        <span class="file-name" id="gallery-file-name">No files chosen</span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100"><i class="fas fa-upload"></i> Add Book</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('thumbnail').addEventListener('change', function () {
+            const fileName = this.files.length > 0 ? this.files[0].name : 'No file chosen';
+            document.getElementById('thumbnail-file-name').textContent = fileName;
+        });
+
+        document.getElementById('gallery').addEventListener('change', function () {
+            const files = this.files;
+            const fileNames = files.length > 0 ? Array.from(files).map(file => file.name).join(', ') : 'No files chosen';
+            document.getElementById('gallery-file-name').textContent = fileNames;
+        });
+    </script>
+</body>
+
+</html>

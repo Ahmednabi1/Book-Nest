@@ -1,0 +1,92 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: sans-serif;
+    background: linear-gradient(to bottom, #333, #666);
+    background-size: cover;
+    background-repeat: none;
+    color: #fff; 
+    background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5)),url('/img/back2.jpg');
+}
+.dashboard-content {
+    text-align: center;
+    margin-top: 120px;
+    margin-bottom: 170px;
+    width: 100%;
+    height: 100%;
+}
+
+.dashboard-title {
+    font-size: 36px;
+    margin-bottom: 30px;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.dashboard-button a {
+    text-decoration: none;
+    color: #fff;
+}
+.dashboard-button {
+    display: block;
+    padding: 15px 30px;
+    background: transparent;
+    color: #fff;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    margin: 10px;
+    cursor: pointer;
+    text-decoration: none; 
+    width: 700px;
+    border-radius: 25px;
+    font-weight: bold;
+    font-size: 20px;
+    text-transform: uppercase;
+}
+
+.dashboard-button span {
+    background: rgba(188, 30, 30, 0.269);
+    height: 100%;
+    width: 0%;
+    border-radius: 25px;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+    transition: width 0.7s, background-color 0.7s;
+}
+
+.dashboard-button:hover span {
+    width: 100%;
+}
+
+
+.dashboard-button {
+    width: 700px;
+    height: 60px;
+    border: 3px solid brown;
+    border-radius: 45px;
+    transition: all 0.3s;
+    cursor: pointer;
+    background: transparent;
+    font-size: 1.2em;
+    font-weight: 550;
+    font-family: 'Montserrat', sans-serif;
+    color:white;
+  }
+  
+  .dashboard-button:hover {
+    background: brown;
+    color: white;
+    font-size: 1.5em;
+  }

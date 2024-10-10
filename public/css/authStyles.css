@@ -1,0 +1,31 @@
+.card {
+    border: none;
+}
+
+.card-body {
+    background-color: #fff;
+    border-radius: 10px;
+}
+
+.form-floating>.form-control,
+.form-floating>.form-control:focus {
+    border-radius: 10px;
+}
+
+.btn-dark {
+    background-color: #333;
+    border-color: #333;
+}
+
+.btn-dark:hover {
+    background-color: #444;
+    border-color: #444;
+}
+
+a.link-secondary {
+    color: #6c757d;
+}
+
+a.link-secondary:hover {
+    color: #495057;
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+    <link rel="stylesheet" href="/css/loginStyles.css">
+</head>
+
+<body>
+    <div class="cont_principal">
+        <div class="cont_centrar">
+            <div class="cont_login">
+                <% if (success_msg) { %>
+                    <div class="alert alert-success text-white">
+                        <%= success_msg %>
+                    </div>
+                    <% } %>
+                        <% if (error_msg) { %>
+                            <div class="alert alert-error text-white">
+                                <%= error_msg %>
+                            </div>
+                            <% } %>
+                                <form action="/auth/register" method="post">
+                                    <ul class='ul_tabs'>
+                                        <li><a href="/auth/login">SIGN IN</a>
+                                            <span class="linea_bajo_nom"></span>
+                                        </li>
+                                        <li class="active"><a href="/auth/signup">SIGN UP</a><span
+                                                class="linea_bajo_nom"></span>
+                                        </li>
+                                    </ul>
+                                    <div class="cont_text_inputs">
+                                        <input type="text" id="username" class="input_form_sign d_block active_inp"
+                                            placeholder="Username" name="name" required />
+                                        <input type="email" id="email" class="input_form_sign d_block active_inp"
+                                            placeholder="Email" name="email" required />
+                                        <input type="password" id="password" class="input_form_sign d_block active_inp"
+                                            placeholder="Password" name="password" required />
+                                        <input type="password" id="confirm_password"
+                                            class="input_form_sign d_block active_inp" placeholder="Confirm Password"
+                                            name="confirmPassword" required />
+                                        <input type="text" id="phone-number" class="input_form_sign d_block active_inp"
+                                            placeholder="Phone Number" name="phone" required />
+                                        <input type="number" id="age" class="input_form_sign d_block active_inp"
+                                            placeholder="Age" name="age" required />
+                                    </div>
+                                    <div class="btm_form">
+                                        <button type="submit" class="btn_sign">SIGN UP</button>
+
+                                        <div class="policy">
+                                            <a href="#" class="policy-link">I Agree to Privacy Policy</a>
+                                            <label class="checkbox-btn">
+                                                <label for="checkbox"></label>
+                                                <input id="checkbox" type="checkbox">
+                                                <span class="checkmark"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </form>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
