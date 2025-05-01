@@ -2,7 +2,7 @@ const Book = require('../models/Book');
 const Rental = require('../models/Rental');
 const User = require('../models/User');
 const BookImage = require('../models/BookImage');
-const { Op,fn,col } = require('sequelize');
+const { Op, fn, col } = require('sequelize');
 const RatingAndReview = require('../models/RatingAndReview');
 const sequelize = require('../config/database');
 
@@ -13,10 +13,10 @@ exports.getAllBooks = async (req, res) => {
             throw new Error("User is not authenticated.");
         }
 
-        const userId = req.session.userId; 
+        const userId = req.session.userId;
         const books = await Book.findAll({
             where: {
-                user_id: { [Op.ne]: userId } 
+                user_id: { [Op.ne]: userId }
             },
             include: [
                 {
@@ -45,12 +45,21 @@ exports.getAllBooks = async (req, res) => {
             }
         });
 
-        res.render('books/allBooks', { books });
+        const error_msg = req.flash('error_msg');
+        const success_msg = req.flash('success_msg');
+
+        res.render('books/allBooks', {
+            books,
+            error_msg,
+            success_msg
+        });
+
     } catch (error) {
         console.error('Error fetching books:', error.message);
         res.status(500).send('Internal Server Error');
     }
 };
+
 
 exports.renderAddBookPage = (req, res) => {
     res.render('books/addBook');
@@ -60,10 +69,25 @@ exports.addBook = async (req, res) => {
     const { title, author, description } = req.body;
     let thumbnail = req.files && req.files.thumbnail ? `uploads/${req.files.thumbnail[0].filename}` : null;
 
+    const sendError = (message) => {
+        if (req.xhr) {
+            return res.status(400).json({ error: message });
+        }
+        req.flash('error_msg', message);
+        return res.redirect('/books/addBooks');
+    };
+
+    const sendSuccess = (message) => {
+        if (req.xhr) {
+            return res.status(200).json({ success: message, redirect: '/myBooks' });
+        }
+        req.flash('success_msg', message);
+        return res.redirect('/myBooks');
+    };
+
     try {
         if (!req.session.userId) {
-            req.flash('error_msg', 'User is not authenticated.');
-            throw new Error("User is not authenticated.");
+            return sendError('User is not authenticated.');
         }
 
         const userId = req.session.userId;
@@ -84,12 +108,10 @@ exports.addBook = async (req, res) => {
             await BookImage.bulkCreate(galleryImages);
         }
 
-        req.flash('success_msg', 'Book added successfully');
-        res.redirect('/books/allBooks');
+        return sendSuccess('Book added successfully');
     } catch (error) {
         console.error('Error adding book:', error.message);
-        req.flash('error_msg', 'Failed to add book. Please try again.');
-        res.redirect('/books/addBooks');
+        return sendError('Failed to add book. Please try again.');
     }
 };
 

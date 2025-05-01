@@ -9,14 +9,22 @@ exports.rentBook = async (req, res) => {
         const userId = req.session.userId;
 
         if (!userId) {
-            req.flash('error_msg', 'User is not authenticated.');
-            throw new Error("User is not authenticated.");
+            const message = 'User is not authenticated.';
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                return res.json({ success: false, message });
+            }
+            req.flash('error_msg', message);
+            return res.redirect('/auth/login'); // Redirect to login if not authenticated
         }
 
         const book = await Book.findByPk(book_id);
         if (!book) {
-            req.flash('error_msg', 'Book not found.');
-            throw new Error("Book not found.");
+            const message = 'Book not found.';
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                return res.json({ success: false, message });
+            }
+            req.flash('error_msg', message);
+            return res.redirect('/books/allBooks');
         }
 
         const rentalConflict = await Rental.findOne({
@@ -25,17 +33,23 @@ exports.rentBook = async (req, res) => {
                 [Op.or]: [
                     { start_date: { [Op.between]: [startDate, endDate] } },
                     { end_date: { [Op.between]: [startDate, endDate] } },
-                    { [Op.and]: [
-                        { start_date: { [Op.lte]: startDate } },
-                        { end_date: { [Op.gte]: endDate } }
-                    ]}
+                    {
+                        [Op.and]: [
+                            { start_date: { [Op.lte]: startDate } },
+                            { end_date: { [Op.gte]: endDate } }
+                        ]
+                    }
                 ]
             }
         });
 
         if (rentalConflict) {
-            req.flash('error_msg', 'The book is already rented for the specified period.');
-            throw new Error("The book is already rented for the specified period.");
+            const message = 'The book is already rented for the specified period.';
+            if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+                return res.json({ success: false, message });
+            }
+            req.flash('error_msg', message);
+            return res.redirect('/books/allBooks');
         }
 
         await Rental.create({
@@ -45,14 +59,25 @@ exports.rentBook = async (req, res) => {
             end_date: endDate
         });
 
-        req.flash('success_msg', 'Book rented successfully');
-        res.redirect('/my-rentals');
+        const successMessage = 'Book rented successfully';
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.json({ success: true });
+        }
+
+        req.flash('success_msg', successMessage);
+        return res.redirect('/my-rentals');
+
     } catch (error) {
         console.error('Error renting book:', error.message);
-        req.flash('error_msg', error.message);
-        res.redirect('/books/allBooks');
+        const errorMessage = 'An error occurred while renting the book.';
+        if (req.xhr || req.headers.accept.indexOf('json') > -1) {
+            return res.json({ success: false, message: errorMessage });
+        }
+        req.flash('error_msg', errorMessage);
+        return res.redirect('/books/allBooks'); 
     }
 };
+
 
 exports.myRentals = async (req, res) => {
     try {

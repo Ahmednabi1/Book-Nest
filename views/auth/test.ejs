@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flash Test</title>
+</head>
+<body>
+    <% if (success_msg) { %>
+        <div style="color: green; font-size: 20px;">
+            <script>console.log("tested");</script>
+            <%= success_msg %>
+        </div>
+    <% } %>
+
+    <% if (error_msg) { %>
+        <div style="color: red; font-size: 20px;">
+            <script>console.log("tested");</script>
+            <%= error_msg %>
+        </div>
+    <% } %>
+</body>
+</html>

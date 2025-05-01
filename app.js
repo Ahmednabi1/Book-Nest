@@ -13,15 +13,11 @@ const rentalRoutes = require('./routes//rentalRoutes');
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.set('view engine', 'ejs');
 
-app.use(session({
-    secret: 'your-secret-key',
-    resave: false,
-    saveUninitialized: false,
-}));
 app.use(cookieParser())
 app.use(
     session({
@@ -37,8 +33,8 @@ app.use(
 app.use(flash());
 
 app.use((req, res, next) => {
-    res.locals.success_msg = req.flash('success_msg');
-    res.locals.error_msg = req.flash('error_msg');
+    res.locals.success_msg = req.flash('success_msg').join(' ');
+    res.locals.error_msg = req.flash('error_msg').join(' ');
     next();
 });
 

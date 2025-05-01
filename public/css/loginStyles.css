@@ -86,7 +86,7 @@
   position: relative;
   float: left;
   width: 100%;
-  margin-top: 20px;
+  margin-top: 0px;
 }
 
 .input_form_sign {
@@ -282,3 +282,50 @@
   }
 }
 
+.alert-error{
+  color: red;
+  font-size: 15px;
+  text-align: center;
+}
+.alert-success{
+  color: green;
+  font-size: 15px;
+  text-align: center;
+}
+
+.toast-container {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 9999;
+}
+
+.toast {
+  padding: 12px 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #fff;
+  margin-bottom: 10px;
+  min-width: 200px;
+  max-width: 300px;
+  box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.15);
+  animation: fadeIn 0.5s ease, fadeOut 0.5s ease 3.5s;
+}
+
+.toast-success {
+  background-color: #28a745;
+}
+
+.toast-error {
+  background-color: #dc3545;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateX(100%); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; transform: translateX(0); }
+  to { opacity: 0; transform: translateX(100%); }
+}

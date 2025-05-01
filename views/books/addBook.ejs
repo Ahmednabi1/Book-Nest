@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/addBookStyles.css">
+    <link rel="stylesheet" href="/css/toast.css">
 </head>
 
 <body>
@@ -77,6 +78,53 @@
             document.getElementById('gallery-file-name').textContent = fileNames;
         });
     </script>
+
+<div id="toast-container" class="toast-container"></div>
+
+<script>
+    function showToast(message, type = 'error') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type} show`;
+        toast.textContent = message;
+        const container = document.getElementById('toast-container');
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 4000);
+    }
+
+    document.querySelector('form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+
+        try {
+            const response = await fetch('/books/addBooks', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.error) {
+                showToast(result.error, 'error');
+            } else if (result.success) {
+                showToast(result.success, 'success');
+                setTimeout(() => {
+                    window.location.href = result.redirect;
+                }, 2000);
+            }
+        } catch (err) {
+            showToast('Something went wrong. Please try again.', 'error');
+        }
+    });
+</script>
+
+
 </body>
 
 </html>

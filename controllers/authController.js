@@ -9,31 +9,51 @@ const passwordValidationRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/
 exports.registerUser = async (req, res) => {
     const { name, email, password, confirmPassword, phone, age } = req.body;
 
+    // Validation functions
+    const sendError = (message) => {
+        if (req.xhr) {
+            return res.status(400).json({ error: message });
+        }
+        req.flash('error_msg', message);
+        return res.redirect('/auth/signup');
+    };
+
+    const sendSuccess = (message) => {
+        if (req.xhr) {
+            return res.status(200).json({ success: message, redirect: '/auth/login' });
+        }
+        req.flash('success_msg', message);
+        return res.redirect('/auth/login');
+    };
+
+    // Validation checks
     if (!name || !email || !password || !confirmPassword || !phone || !age) {
-        req.flash('error_msg', 'Please enter all fields');
-        return res.redirect('/auth/register');
+        return sendError('Please enter all fields');
     }
 
     if (!passwordValidationRegex.test(password)) {
-        req.flash('error_msg', 'Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number.');
-        return res.redirect('/auth/register');
+        return sendError(
+            'Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number.'
+        );
     }
 
     if (password !== confirmPassword) {
-        req.flash('error_msg', 'Passwords do not match');
-        return res.redirect('/auth/register');
+        return sendError('Passwords do not match');
     }
 
     if (age && (isNaN(age) || age < 0 || age > 120)) {
-        req.flash('error_msg', 'Invalid age.');
-        return res.redirect('/auth/register');
+        return sendError('Invalid age.');
     }
 
     try {
         const user = await User.findOne({ where: { email } });
         if (user) {
-            req.flash('error_msg', 'Email is already registered');
-            return res.redirect('/auth/register');
+            return sendError('Email is already registered');
+        }
+        // Check if the phone number is already registered
+        const existingUser = await User.findOne({ where: { phone } });
+        if (existingUser) {
+            return sendError('Phone number is already registered');
         }
 
         const salt = await bcrypt.genSalt(10);
@@ -44,50 +64,58 @@ exports.registerUser = async (req, res) => {
             email,
             password: hashedPassword,
             phone,
-            age
+            age,
         });
 
-        setTimeout(() => {
-            req.flash('success_msg', 'You are now registered and can log in');
-            res.redirect('/auth/login');
-        }, 2000);
+        return sendSuccess('You are now registered and can log in');
     } catch (err) {
         console.error(err);
-        req.flash('error_msg', 'Something went wrong. Please try again.');
-        res.redirect('/auth/login');
+        return sendError('Something went wrong. Please try again.');
     }
 };
 
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
-    if (!email || !password) {
-        req.flash('error_msg', 'Please enter all fields');
+    const sendError = (message) => {
+        if (req.xhr) {
+            return res.status(400).json({ error: message });
+        }
+        req.flash('error_msg', message);
         return res.redirect('/auth/login');
+    };
+
+    const sendSuccess = (message) => {
+        if (req.xhr) {
+            return res.status(200).json({ success: message, redirect: '/dashboard' });
+        }
+        req.flash('success_msg', message);
+        return res.redirect('/dashboard');
+    };
+
+    if (!email || !password) {
+        return sendError('Please enter all fields');
     }
 
     try {
         const user = await User.findOne({ where: { email } });
         if (!user) {
-            req.flash('error_msg', 'Invalid email or password');
-            return res.redirect('/auth/login');
+            return sendError('Invalid email or password');
         }
 
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            req.flash('error_msg', 'Invalid password, please try again.');
-            return res.redirect('/auth/login');
+            return sendError('Invalid password, please try again.');
         }
 
         req.session.userId = user.id;
-        req.flash('success_msg', 'You are now logged in');
-        res.redirect('/dashboard'); 
+        return sendSuccess('You are now logged in');
     } catch (err) {
         console.error(err);
-        req.flash('error_msg', 'Something went wrong. Please try again.');
-        res.redirect('/auth/login');
+        return sendError('Something went wrong. Please try again.');
     }
 };
+
 
 exports.logout = (req, res) => {
     req.session.destroy(err => {
@@ -118,13 +146,13 @@ exports.forgetPassword = async (req, res) => {
             service: 'Gmail',
             auth: {
                 user: 'ahmed.nabil.4426@gmail.com',
-                pass: 'epfp fiar bwim tqid'
+                pass: 'lpev enam mwtw fhjl'
             }
         });
 
         const mailOptions = {
             to: user.email,
-            from: 'passwordreset@demo.com',
+            from: '"Book Nest, Password Reset"',
             subject: 'Password Reset',
             text: `You are receiving this because you (or someone else) have requested to reset the password for your account.\n\n
             Please click on the following link, or paste this into your browser to complete the process:\n\n
@@ -135,7 +163,8 @@ exports.forgetPassword = async (req, res) => {
         await transporter.sendMail(mailOptions);
 
         req.flash('info', `An e-mail has been sent to ${user.email} with further instructions.`);
-        res.redirect('/auth/login');
+        // res.redirect('/auth/login');
+        res.send('An e-mail has been sent to ' + user.email + ' with further instructions.');
     } catch (error) {
         console.error('Error handling forgot password:', error);
         res.redirect('/auth/forgot-password');
@@ -144,40 +173,53 @@ exports.forgetPassword = async (req, res) => {
 
 exports.resetPassword = async (req, res) => {
     const { password, confirmPassword } = req.body;
-
+  
+    const sendError = (message) => {
+      if (req.xhr) {
+        return res.status(400).json({ error: message });
+      }
+      req.flash('error_msg', message);
+      return res.redirect(`/auth/reset/${req.params.token}`);
+    };
+  
+    const sendSuccess = (message) => {
+      if (req.xhr) {
+        return res.status(200).json({ success: message, redirect: '/auth/login' });
+      }
+      req.flash('success_msg', message);
+      return res.redirect('/auth/login');
+    };
+  
     if (password !== confirmPassword) {
-        req.flash('error_msg', 'Passwords do not match.');
-        return res.redirect(`/auth/reset/${req.params.token}`);
+      return sendError('Passwords do not match.');
     }
-
+  
     const passwordValidationRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
     if (!passwordValidationRegex.test(password)) {
-        req.flash('error_msg', 'Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number.');
-        return res.redirect(`/auth/reset/${req.params.token}`);
+      return sendError('Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number.');
     }
-
+  
     try {
-        const user = await User.findOne({
-            where: {
-                resetPasswordToken: req.params.token,
-                resetPasswordExpires: { [Op.gt]: Date.now() }
-            }
-        });
-
-        if (!user) {
-            req.flash('error_msg', 'Password reset token is invalid or has expired.');
-            return res.redirect('/auth/forgot-password');
+      const user = await User.findOne({
+        where: {
+          resetPasswordToken: req.params.token,
+          resetPasswordExpires: { [Op.gt]: Date.now() }
         }
-
-        user.password = await bcrypt.hash(password, 12);
-        user.resetPasswordToken = null;
-        user.resetPasswordExpires = null;
-        await user.save();
-
-        req.flash('success_msg', 'Password has been updated.');
-        res.redirect('/auth/login');
+      });
+  
+      if (!user) {
+        return sendError('Password reset token is invalid or has expired.');
+      }
+  
+      user.password = await bcrypt.hash(password, 12);
+      user.resetPasswordToken = null;
+      user.resetPasswordExpires = null;
+      await user.save();
+  
+      return sendSuccess('Password has been updated.');
     } catch (error) {
-        console.error('Error resetting password:', error);
-        res.redirect('/auth/forgot-password');
+      console.error('Error resetting password:', error);
+      return sendError('Failed to reset password. Please try again.');
     }
-};
+  };
+  

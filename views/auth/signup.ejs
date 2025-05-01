@@ -1,67 +1,160 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Sign Up</title>
-    <link rel="stylesheet" href="/css/loginStyles.css">
+    <link rel="stylesheet" href="/css/loginStyles.css" />
+    <style>
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            max-width: 300px;
+        }
+        .toast {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            color: white;
+            font-size: 14px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .toast-success {
+            background-color: #28a745;
+        }
+        .toast-error {
+            background-color: #dc3545;
+        }
+    </style>
 </head>
-
 <body>
     <div class="cont_principal">
         <div class="cont_centrar">
             <div class="cont_login">
-                <% if (success_msg) { %>
-                    <div class="alert alert-success text-white">
-                        <%= success_msg %>
-                    </div>
-                    <% } %>
-                        <% if (error_msg) { %>
-                            <div class="alert alert-error text-white">
-                                <%= error_msg %>
-                            </div>
-                            <% } %>
-                                <form action="/auth/register" method="post">
-                                    <ul class='ul_tabs'>
-                                        <li><a href="/auth/login">SIGN IN</a>
-                                            <span class="linea_bajo_nom"></span>
-                                        </li>
-                                        <li class="active"><a href="/auth/signup">SIGN UP</a><span
-                                                class="linea_bajo_nom"></span>
-                                        </li>
-                                    </ul>
-                                    <div class="cont_text_inputs">
-                                        <input type="text" id="username" class="input_form_sign d_block active_inp"
-                                            placeholder="Username" name="name" required />
-                                        <input type="email" id="email" class="input_form_sign d_block active_inp"
-                                            placeholder="Email" name="email" required />
-                                        <input type="password" id="password" class="input_form_sign d_block active_inp"
-                                            placeholder="Password" name="password" required />
-                                        <input type="password" id="confirm_password"
-                                            class="input_form_sign d_block active_inp" placeholder="Confirm Password"
-                                            name="confirmPassword" required />
-                                        <input type="text" id="phone-number" class="input_form_sign d_block active_inp"
-                                            placeholder="Phone Number" name="phone" required />
-                                        <input type="number" id="age" class="input_form_sign d_block active_inp"
-                                            placeholder="Age" name="age" required />
-                                    </div>
-                                    <div class="btm_form">
-                                        <button type="submit" class="btn_sign">SIGN UP</button>
+                <form id="signupForm" action="/auth/register" method="post">
+                    <ul class='ul_tabs'>
+                        <li><a href="/auth/login">SIGN IN</a>
+                            <span class="linea_bajo_nom"></span>
+                        </li>
+                        <li class="active"><a href="/auth/signup">SIGN UP</a>
+                            <span class="linea_bajo_nom"></span>
+                        </li>
+                    </ul>
 
-                                        <div class="policy">
-                                            <a href="#" class="policy-link">I Agree to Privacy Policy</a>
-                                            <label class="checkbox-btn">
-                                                <label for="checkbox"></label>
-                                                <input id="checkbox" type="checkbox">
-                                                <span class="checkmark"></span>
-                                            </label>
-                                        </div>
-                                    </div>
-                                </form>
+                    <div class="cont_text_inputs">
+                        <input type="text" id="username" class="input_form_sign d_block active_inp"
+                               placeholder="Username" name="name" required />
+                        <input type="email" id="email" class="input_form_sign d_block active_inp"
+                               placeholder="Email" name="email" required />
+                        <input type="password" id="password" class="input_form_sign d_block active_inp"
+                               placeholder="Password" name="password" required />
+                        <input type="password" id="confirm_password"
+                               class="input_form_sign d_block active_inp"
+                               placeholder="Confirm Password" name="confirmPassword" required />
+                        <input type="text" id="phone-number" class="input_form_sign d_block active_inp"
+                               placeholder="Phone Number" name="phone" required />
+                        <input type="number" id="age" class="input_form_sign d_block active_inp"
+                               placeholder="Age" name="age" required />
+                    </div>
+                    <div class="btm_form">
+                        <button type="submit" class="btn_sign">SIGN UP</button>
+
+                        <div class="policy">
+                            <a href="#" class="policy-link">I Agree to Privacy Policy</a>
+                            <label class="checkbox-btn">
+                                <input id="checkbox" type="checkbox" required />
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
-</body>
 
+    <div id="toast-container" class="toast-container">
+        <!-- Toast messages will be dynamically added here -->
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        // Show toast message
+        function showToast(message, type = 'error') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type} show`;
+            toast.textContent = message;
+            const container = document.getElementById('toast-container');
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
+
+        // Client-side validation
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent default form submission
+
+            const form = e.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData);
+
+            // Client-side validation
+            if (!data.name || !data.email || !data.password || !data.confirmPassword || !data.phone || !data.age) {
+                showToast('Please enter all fields');
+                return;
+            }
+
+            const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+            if (!passwordRegex.test(data.password)) {
+                showToast(
+                    'Password must be at least 8 characters long, include at least one uppercase letter, one lowercase letter, and one number.'
+                );
+                return;
+            }
+
+            if (data.password !== data.confirmPassword) {
+                showToast('Passwords do not match');
+                return;
+            }
+
+            if (isNaN(data.age) || data.age < 0 || data.age > 120) {
+                showToast('Invalid age.');
+                return;
+            }
+
+            // AJAX submission
+            try {
+                const response = await fetch('/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest', // Indicate AJAX request
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                const result = await response.json();
+
+                if (result.error) {
+                    showToast(result.error);
+                } else if (result.success) {
+                    showToast(result.success, 'success');
+                    setTimeout(() => {
+                        window.location.href = result.redirect;
+                    }, 2000);
+                }
+            } catch (err) {
+                showToast('Something went wrong. Please try again.');
+            }
+        });
+    </script>
+</body>
 </html>

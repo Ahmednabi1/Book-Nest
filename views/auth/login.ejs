@@ -49,6 +49,61 @@
             </div>
         </div>
     </div>
+
+
+    <div id="toast-container" class="toast-container"></div>
+
+<script>
+    function showToast(message, type = 'error') {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type} show`;
+        toast.textContent = message;
+        const container = document.getElementById('toast-container');
+        container.appendChild(toast);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 300);
+        }, 2000);
+    }
+
+    document.getElementById('authForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData);
+
+        if (!data.email || !data.password) {
+            showToast('Please enter all fields');
+            return;
+        }
+
+        try {
+            const response = await fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify(data)
+            });
+
+            const result = await response.json();
+
+            if (result.error) {
+                showToast(result.error);
+            } else if (result.success) {
+                showToast(result.success, 'success');
+                setTimeout(() => {
+                    window.location.href = result.redirect;
+                }, 2000);
+            }
+        } catch (err) {
+            showToast('Something went wrong. Please try again.');
+        }
+    });
+</script>
+
+
 </body>
 
 </html>

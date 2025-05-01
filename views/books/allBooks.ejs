@@ -10,8 +10,8 @@
     <link rel="stylesheet" href="/css/styles.css">
     <link rel="stylesheet" href="/css/availableBooksStyles.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css" />
-    <link rel="stylesheet" type="text/css"
-        href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick-theme.css" />
+    <link rel="stylesheet" href="/css/toast.css">
 </head>
 
 <body>
@@ -29,8 +29,8 @@
     <div class="container">
         <h1 class="page-title text-center"><i class="fas fa-book-open"></i> Available Books</h1>
         <div class="row books-list">
-            <% if (books.length> 0) { %>
-                <% books.forEach(book=> { %>
+            <% if (books.length > 0) { %>
+                <% books.forEach(book => { %>
                     <div class="col-lg-3 col-md-4 col-sm-6">
                         <div class="book-card">
                             <% if (book.thumbnail_path) { %>
@@ -62,8 +62,8 @@
                                             </p>
 
                                             <div class="book-reviews">
-                                                <% if (book.RatingAndReviews.length> 0) { %>
-                                                    <% book.RatingAndReviews.forEach(review=> { %>
+                                                <% if (book.RatingAndReviews.length > 0) { %>
+                                                    <% book.RatingAndReviews.forEach(review => { %>
                                                         <div class="review">
                                                             <p><i class="fas fa-user"></i> <strong>
                                                                     <%= review.User.name %>:
@@ -81,9 +81,9 @@
                                             </div>
 
                                             <div class="book-gallery">
-                                                <% if (book.BookImages && book.BookImages.length> 0) { %>
+                                                <% if (book.BookImages && book.BookImages.length > 0) { %>
                                                     <div class="gallery-slider">
-                                                        <% book.BookImages.forEach(image=> { %>
+                                                        <% book.BookImages.forEach(image => { %>
                                                             <div><img src="/<%= image.image_path %>"
                                                                     class="gallery-image" alt="Book Image"></div>
                                                             <% }) %>
@@ -93,7 +93,7 @@
                                                         <% } %>
                                             </div>
 
-                                            <form action="/books/rent/<%= book.id %>" method="POST">
+                                            <form class="rent-form" data-book-id="<%= book.id %>">
                                                 <div class="rentDates">
                                                     <div class="rent">
                                                         <div class="form-group date">
@@ -147,8 +147,120 @@
                     }
                 ]
             });
+    
+            // Handle the rent form submission
+            $('.rent-form').on('submit', function (e) {
+                e.preventDefault(); // Prevent the default form submission
+    
+                const form = $(this);
+                const bookId = form.data('book-id');
+                const startDate = form.find('input[name="startDate"]').val();
+                const endDate = form.find('input[name="endDate"]').val();
+    
+                // Convert to Date objects for comparison
+                const today = new Date();
+                const startDateObj = new Date(startDate);
+                const endDateObj = new Date(endDate);
+    
+                // Check if start date is in the past
+                if (startDateObj < today) {
+                    showToast("Start date cannot be in the past.", 'error');
+                    return;
+                }
+    
+                // Check if end date is after start date
+                if (endDateObj <= startDateObj) {
+                    showToast("End date must be after the start date.", 'error');
+                    return;
+                }
+    
+                // Check if start date is more than 2 days ahead
+                const maxStartDate = new Date(today);
+                maxStartDate.setDate(today.getDate() + 2); // 2 days from today
+                if (startDateObj > maxStartDate) {
+                    showToast("Start date cannot be more than 2 days ahead.", 'error');
+                    return;
+                }
+    
+                // Check if end date is more than 2 days after the start date
+                const maxEndDate = new Date(startDateObj);
+                maxEndDate.setDate(startDateObj.getDate() + 2); // 2 days from the start date
+                if (endDateObj > maxEndDate) {
+                    showToast("End date cannot be more than 2 days after the start date.", 'error');
+                    return;
+                }
+    
+                // Proceed with the AJAX request if all validations pass
+                $.ajax({
+                    type: 'POST',
+                    url: `/books/rent/${bookId}`,
+                    data: { startDate, endDate },
+                    success: function (response) {
+                        if (response.success) {
+                            window.location.href = '/my-rentals'; // Redirect after success
+                        } else {
+                            showToast(response.message, 'error'); // Show error toast
+                        }
+                    },
+                    error: function (xhr) {
+                        const response = xhr.responseJSON;
+                        showToast(response?.message || 'An error occurred', 'error'); // Show error toast
+                    }
+                });
+            });
+    
+            // Function to display toast notifications
+            function showToast(message, type) {
+                const toast = $('<div class="toast toast-' + type + '">' + message + '</div>');
+                $('#toast-container').append(toast);
+                setTimeout(() => toast.fadeOut(400, () => toast.remove()), 4000);
+            }
         });
     </script>
+    
+
+    <div id="toast-container">
+        <% if (success_msg.length > 0) { %>
+            <div class="toast toast-success">
+                <%= success_msg[0] %>
+            </div>
+            <% } %>
+                <% if (error_msg.length > 0) { %>
+                    <div class="toast toast-error">
+                        <%= error_msg[0] %>
+                    </div>
+                    <% } %>
+    </div>
+
+    <style>
+ #toast-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+.toast {
+    background-color: #444;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    opacity: 0.9;
+    transition: opacity 0.3s ease-out;
+}
+
+.toast-success {
+    background-color: green;
+}
+
+.toast-error {
+    background-color: red;
+}
+
+   
+    </style>
 </body>
 
 </html>
